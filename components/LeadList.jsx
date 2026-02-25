@@ -75,6 +75,12 @@ export default function LeadList() {
     enabled: !!state,
   });
 
+  const { data: scrapeCities = [] } = useQuery({
+    queryKey: ['cities', country, scrapeState],
+    queryFn: () => getCities(country, scrapeState),
+    enabled: !!scrapeState,
+  });
+
   const { data: departments = [] } = useQuery({
     queryKey: ['departments'],
     queryFn: getDepartments,
@@ -480,24 +486,33 @@ export default function LeadList() {
                   <p className="mt-0.5 text-xs text-slate-500">Choose the type of places to search for.</p>
                 </div>
                 <div>
+                  <label className="block text-sm text-slate-600">State</label>
+                  <select
+                    name="scrapeState"
+                    value={scrapeState}
+                    onChange={(e) => { setScrapeState(e.target.value); setScrapeCity(''); }}
+                    className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
+                  >
+                    <option value="">Select state</option>
+                    {states.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
                   <label className="block text-sm text-slate-600">City</label>
-                  <input
+                  <select
                     name="city"
                     value={scrapeCity}
                     onChange={(e) => setScrapeCity(e.target.value)}
-                    placeholder="City"
-                    className="mt-1 w-full rounded border px-3 py-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-slate-600">State</label>
-                  <input
-                    name="scrapeState"
-                    value={scrapeState}
-                    onChange={(e) => setScrapeState(e.target.value)}
-                    placeholder="State"
-                    className="mt-1 w-full rounded border px-3 py-2"
-                  />
+                    className="mt-1 w-full rounded border border-slate-300 px-3 py-2"
+                    disabled={!scrapeState}
+                  >
+                    <option value="">Select city</option>
+                    {scrapeCities.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm text-slate-600">Max leads to fetch (1–200, only with phone)</label>
